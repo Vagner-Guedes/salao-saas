@@ -1,37 +1,37 @@
-import { createContext, useState } from "react"
+import { createContext, useContext, useState } from "react"
 
 interface AuthContextData {
   isAuthenticated: boolean
-  signIn: () => void
-  signOut: () => void
+  login: () => void
+  logout: () => void
 }
 
-export const AuthContext = createContext({} as AuthContextData)
+const AuthContext = createContext<AuthContextData | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem("auth") === "true"
-  })
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  function signIn() {
-    localStorage.setItem("auth", "true")
+  function login() {
     setIsAuthenticated(true)
   }
 
-  function signOut() {
-    localStorage.removeItem("auth")
+  function logout() {
     setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        signIn,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider")
+  }
+
+  return context
 }

@@ -1,28 +1,64 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-
+import { Routes, Route, Navigate } from "react-router-dom"
 import Login from "../pages/Login"
 import Dashboard from "../pages/Dashboard"
-import PrivateRoute from "./PrivateRoute"
+import Agenda from "../pages/Agenda"
+import Clients from "../pages/Clients"
+import Professionals from "../pages/Professionals"
+import Services from "../pages/Services"
+import { PrivateRoute } from "./PrivateRoute"
 
-function AppRoutes() {
+export function AppRoutes() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rota pública */}
-        <Route path="/" element={<Login />} />
+    <Routes>
+      <Route path="/login" element={<Login />} />
 
-        {/* Rota privada */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/agenda"
+        element={
+          <PrivateRoute>
+            <Agenda />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/clients"
+        element={
+          <PrivateRoute>
+            <Clients />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/professionals"
+        element={
+          <PrivateRoute>
+            <Professionals />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/services"
+        element={
+          <PrivateRoute>
+            <Services />
+          </PrivateRoute>
+        }
+      />
+
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   )
 }
-
-export default AppRoutes
