@@ -1,4 +1,17 @@
+import { useNavigate } from "react-router-dom"
+import { useContext } from "react"
+import { AuthContext } from "../contexts/AuthContext"
+
 function Login() {
+  const navigate = useNavigate()
+  const { signIn } = useContext(AuthContext)
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault() // impede reload da página
+    signIn()           // login fake
+    navigate("/dashboard") // redireciona
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
@@ -6,7 +19,7 @@ function Login() {
         {/* Logo / Título */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-purple-600">
-            Salão SaaS
+            Controle Beauty
           </h1>
           <p className="text-gray-500 mt-2">
             Faça login para continuar
@@ -14,7 +27,7 @@ function Login() {
         </div>
 
         {/* Formulário */}
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -47,7 +60,7 @@ function Login() {
 
         {/* Rodapé */}
         <div className="text-center mt-6 text-sm text-gray-500">
-          © {new Date().getFullYear()} Salão SaaS
+          © {new Date().getFullYear()} SBP
         </div>
       </div>
     </div>

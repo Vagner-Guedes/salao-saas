@@ -2,21 +2,24 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import Login from "../pages/Login"
 import Dashboard from "../pages/Dashboard"
-import Agenda from "../pages/Agenda"
-import Clients from "../pages/Clients"
-import Professionals from "../pages/Professionals"
-import Services from "../pages/Services"
+import PrivateRoute from "./PrivateRoute"
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rota pública */}
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/agenda" element={<Agenda />} />
-        <Route path="/clients" element={<Clients />} />
-        <Route path="/professionals" element={<Professionals />} />
-        <Route path="/services" element={<Services />} />
+
+        {/* Rota privada */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )
