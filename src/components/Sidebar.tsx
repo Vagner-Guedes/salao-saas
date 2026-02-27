@@ -4,7 +4,7 @@ function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r">
       <div className="p-6 font-bold text-lg">
-        Salão SaaS
+      Controle Beauty
       </div>
 
       <nav className="px-4 space-y-2">
