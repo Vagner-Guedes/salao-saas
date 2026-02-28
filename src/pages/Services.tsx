@@ -1,5 +1,235 @@
+import { useState } from "react"
+import { Layout } from "../components/Layout"
+import { Pencil, Trash2 } from "lucide-react"
+
+interface Service {
+  id: number
+  name: string
+  duration: string
+  price: string
+}
+
 function Services() {
-    return <h1>Services</h1>
+  const [services, setServices] = useState<Service[]>([
+    {
+      id: 1,
+      name: "Corte Feminino",
+      duration: "60 min",
+      price: "R$ 80,00",
+    },
+    {
+      id: 2,
+      name: "Barba",
+      duration: "30 min",
+      price: "R$ 40,00",
+    },
+  ])
+
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<Service | null>(null)
+
+  function openNew() {
+    setEditing(null)
+    setOpen(true)
   }
-  
-  export default Services
+
+  function openEdit(service: Service) {
+    setEditing(service)
+    setOpen(true)
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    const data = {
+      name: formData.get("name") as string,
+      duration: formData.get("duration") as string,
+      price: formData.get("price") as string,
+    }
+
+    if (editing) {
+      setServices(prev =>
+        prev.map(item =>
+          item.id === editing.id ? { ...item, ...data } : item
+        )
+      )
+    } else {
+      setServices(prev => [
+        ...prev,
+        { id: Date.now(), ...data },
+      ])
+    }
+
+    setOpen(false)
+    setEditing(null)
+    e.currentTarget.reset()
+  }
+
+  function handleDelete(id: number) {
+    if (!confirm("Deseja realmente excluir este serviço?")) return
+    setServices(prev => prev.filter(item => item.id !== id))
+  }
+
+  return (
+    <Layout>
+      {/* Cabeçalho */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Serviços
+          </h2>
+          <p className="text-gray-600 mt-1">
+            Gerencie os serviços oferecidos
+          </p>
+        </div>
+
+        <button
+          onClick={openNew}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition"
+        >
+          Novo Serviço
+        </button>
+      </div>
+
+      {/* ================= DESKTOP ================= */}
+      <div className="hidden md:block mt-6 bg-white rounded-lg shadow overflow-hidden">
+        <div className="grid grid-cols-12 px-4 py-3 bg-gray-50 border-b text-sm font-semibold text-gray-600">
+          <div className="col-span-5">Serviço</div>
+          <div className="col-span-3">Duração</div>
+          <div className="col-span-2">Preço</div>
+          <div className="col-span-2 text-right">Ações</div>
+        </div>
+
+        {services.map(service => (
+          <div
+            key={service.id}
+            className="grid grid-cols-12 items-center px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 transition"
+          >
+            <div className="col-span-5 font-medium">
+              {service.name}
+            </div>
+
+            <div className="col-span-3 text-gray-500">
+              {service.duration}
+            </div>
+
+            <div className="col-span-2 text-gray-500">
+              {service.price}
+            </div>
+
+            <div className="col-span-2 flex justify-end gap-2">
+              <button
+                onClick={() => openEdit(service)}
+                title="Editar"
+                className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100"
+              >
+                <Pencil size={16} />
+              </button>
+
+              <button
+                onClick={() => handleDelete(service.id)}
+                title="Excluir"
+                className="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= MOBILE ================= */}
+      <div className="md:hidden mt-6 space-y-4">
+        {services.map(service => (
+          <div
+            key={service.id}
+            className="bg-white rounded-lg shadow p-4"
+          >
+            <p className="font-semibold">{service.name}</p>
+            <p className="text-sm text-gray-500">
+              Duração: {service.duration}
+            </p>
+            <p className="text-sm text-gray-500">
+              Preço: {service.price}
+            </p>
+
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => openEdit(service)}
+                className="flex-1 flex justify-center items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg"
+              >
+                <Pencil size={16} />
+                Editar
+              </button>
+
+              <button
+                onClick={() => handleDelete(service.id)}
+                className="flex-1 flex justify-center items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg"
+              >
+                <Trash2 size={16} />
+                Excluir
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= MODAL ================= */}
+      {open && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {editing ? "Editar Serviço" : "Novo Serviço"}
+            </h3>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                name="name"
+                placeholder="Nome do serviço"
+                defaultValue={editing?.name}
+                required
+                className="w-full border rounded-lg px-3 py-2"
+              />
+
+              <input
+                name="duration"
+                placeholder="Duração (ex: 30 min)"
+                defaultValue={editing?.duration}
+                required
+                className="w-full border rounded-lg px-3 py-2"
+              />
+
+              <input
+                name="price"
+                placeholder="Preço (ex: R$ 50,00)"
+                defaultValue={editing?.price}
+                required
+                className="w-full border rounded-lg px-3 py-2"
+              />
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </Layout>
+  )
+}
+
+export default Services
